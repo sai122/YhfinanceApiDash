@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stocks Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Portfolio</h1>
+  <table id="stocksTable">
+    <tr>
+      <th>Stock Name</th>
+      <th>Price</th>
+    </tr>
+  </table>
+
+  <script>
+    function fetchStockData(symbol) {
+      const apiKey = 'MY-API-Key';
+      var apiUrl = `https://yfapi.net/v6/finance/quote?region=US&lang=IN&symbols=`;
+
+      for (const value of symbol) {
+        apiUrl = apiUrl.concat(value,"%2c");
+      }
+      apiUrl = apiUrl.substring(0, apiUrl.length - 3);
+      fetch(apiUrl, {
+        headers: {
+          'accept': 'application/json',
+          'x-api-key': apiKey
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        var stockData = data.quoteResponse.result;
+        for (var i = 0; i < stockData.length; i++) {
+          const stockName = stockData[i].shortName;
+          const stockPrice = stockData[i].regularMarketPrice;
+
+          const tableRow = `<tr><td>${stockName}</td><td>${stockPrice}</td></tr>`;
+          document.getElementById('stocksTable').innerHTML += tableRow;
+        }
+        
+      })
+      .catch(error => {
+        console.error(`Error fetching stock data for ${symbol}:`, error);
+      });
+      
+    }
+
+
+
+
+    // Call the fetchStockData function when the page loads
+    const stocks = new Set(["CROMPTON.NS","INFY","FINEORG.NS","CESC.NS","EMBASSY.BO","BARBEQUE.NS","IEX.NS","PAGEIND.NS","CHAMBLFERT.NS","ADANITRANS.NS"]);
+    window.onload = fetchStockData(stocks);
+
+    // Fetch stock data every 20 minutes
+    //setInterval(fetchStockData(stocks), 20 * 60 * 1000); // 20 minutes = 20 * 60 * 1000 milliseconds
+  </script>
+</body>
+</html>
+
+
+
+
+
+ <!--   // Function to fetch stock data from Alpha Vantage API
+ function fetchStockData(symbol) {
+      // Replace 'YOUR_API_KEY' with your actual API key from Alpha Vantage
+      const apiKey = 'YOUR_API_KEY';
+      const apiUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=YOUR_API_KEY`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const stockName = data['Global Quote']['01. symbol'];
+          const stockPrice = data['Global Quote']['05. price'];
+          var other = data['Global Quote'].toString();
+          const tableRow = `<tr><td>${stockName}</td><td>${stockPrice}</td><td>${other}</td></tr>`;
+          document.getElementById('stocksTable').innerHTML += tableRow;
+        })
+        .catch(error => {
+          console.log('Error fetching stock data:', error);
+        });
+    } -->
